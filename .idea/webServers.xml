@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="3dee743a-0597-487f-b60a-f015e2d0af5d" name="simple-device-plugin" url="http://10.173.32.4">
+        <fileTransfer host="10.173.32.4" port="22" privateKey="C:\Users\hzhuangyang1\.ssh\monsterdev" accessType="SFTP" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
