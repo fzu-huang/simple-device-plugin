@@ -12,7 +12,6 @@ import (
 )
 
 const (
-	resourceName = "netease/vpcPort"
 	serverSocket = pluginapi.DevicePluginPath
 )
 
@@ -115,23 +114,6 @@ func (m *DevicePlugin) Register(kubeletEndpoint, resourceName string) error {
 	return nil
 }
 
-// ListAndWatch lists devices and update that list according to the health status
-func (m *DevicePlugin) ListAndWatch(e *pluginapi.Empty, s pluginapi.DevicePlugin_ListAndWatchServer) error {
-	s.Send(&pluginapi.ListAndWatchResponse{Devices: m.devs})
-
-	for {
-		select {
-		case <-m.stop:
-			return nil
-		}
-	}
-}
-
-// Allocate which return list of devices.
-func (m *DevicePlugin) Allocate(ctx context.Context, r *pluginapi.AllocateRequest) (*pluginapi.AllocateResponse, error) {
-	return &pluginapi.AllocateResponse{}, nil
-}
-
 func (m *DevicePlugin) cleanup() error {
 	if err := os.Remove(m.socket); err != nil && !os.IsNotExist(err) {
 		return err
@@ -141,7 +123,7 @@ func (m *DevicePlugin) cleanup() error {
 }
 
 // Serve starts the gRPC server and register the device plugin to Kubelet
-func (m *DevicePlugin) Serve() error {
+func (m *DevicePlugin) Serve(resourceName string) error {
 	err := m.Start()
 	if err != nil {
 		glog.Warningf("Could not start device plugin: %s", err)

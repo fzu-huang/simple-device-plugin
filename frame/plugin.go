@@ -53,7 +53,7 @@ L:
 			}
 
 			dpw.DevicePlugin = NewDevicePlugin(dpw.SocketName, dpw.GetDeviceFunc)
-			if err := dpw.DevicePlugin.Serve(); err != nil {
+			if err := dpw.DevicePlugin.Serve(dpw.ResourceName); err != nil {
 				glog.Warningf("Could not contact Kubelet, retrying. Did you enable the device plugin feature gate?")
 			} else {
 				restart = false
