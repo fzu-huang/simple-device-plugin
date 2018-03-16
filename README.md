@@ -9,7 +9,7 @@ device-plugin 是kubernetes的一个新特性（v1alpha），它用于管理机�
 举个简单的例子，假设我们的pod中，每个容器都需要消耗一个特定的存储设备（我们这里暂时称之为`superdisk`），创建一个superdisk的device-plugin，将其运行在node端。这个device-plugin运行后会做至少以下事情：
 
  1. 获取当前机器上的superdisk设备，构成一个数组；
- 2. 向kubelet注册一个资源，资源名可以自定义，这里假定是`hy.c/superdisk`【注意这里名字中必须包含域名前缀，并用/分隔】;
+ 2. 向kubelet注册一个资源，资源名可以自定义，这里假定是`hy.c/superdisk`【注意这里名字中必须是带有/且不包含 kubernetes.io/ 的字符串】;
  3. 开启一个grpc服务器，kubelet会向这个grpc服务器发起`listAndWatch`请求和`allocate`请求，`listAndWatch`请求会在kubelet与device-plugin之间建立一个长连接，device-plugin会主动将device列表发给kubelet；`allocate`请求告知device-plugin kubelet要使用哪一个设备，device-plugin将为容器使用该设备返回需要的运行时参数。
 
 如果你想，device-plugin还可以做更多：
@@ -55,13 +55,18 @@ type DevicePluginImpl interface {
 然后执行`frame.Build`和`RunDevicePlugin`方法，比如：
 
 ````
+func (mdp *MyDevicePlugin) ListAndWatch(e *pluginapi.Empty, s pluginapi.DevicePlugin_ListAndWatchServer) error{
+	...
+}
+//Allocate,Refresh,Destroy method of *MyDevicePlugin
+...
 mdp := &MyDevicePlugin{
-	    //build your struct
-	}
-	resourceName := "cpu"
-	socketName := "cpu.sock"
+	//build your struct
+}
+resourceName := "cpu"
+socketName := "cpu.sock"
 mdpWrapper := frame.Build(resourceName, socketName, mdp)
-	mdpWrapper.RunDevicePlugin()
+mdpWrapper.RunDevicePlugin()
 ````
 
 你会注意到，你写的代码完全没有涉及rpc相关，因为这部分由本工具代劳了。
