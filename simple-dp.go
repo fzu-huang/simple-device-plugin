@@ -1,23 +1,16 @@
 package main
 
 import (
-	"flag"
+	pluginapi "k8s.io/kubernetes/pkg/kubelet/apis/deviceplugin/v1alpha"
 	"github.com/fzu-huang/simple-device-plugin/frame"
 	"github.com/golang/glog"
-	"io/ioutil"
-	pluginapi "k8s.io/kubernetes/pkg/kubelet/apis/deviceplugin/v1alpha"
 	"strconv"
+	"io/ioutil"
 	"strings"
+	"flag"
 )
 
-func main() {
-	flag.Parse()
-	defer glog.Flush()
-	cpuDPWrapper := frame.Build("cpu", "cpu-dp.sock", getCpuDevices)
-	cpuDPWrapper.RunDevicePlugin()
-}
-
-func getCpuDevices() []*pluginapi.Device {
+func getDevices() []*pluginapi.Device {
 	devices := []*pluginapi.Device{}
 
 	cpuinfo, err := ioutil.ReadFile("/proc/cpuinfo")
@@ -41,3 +34,11 @@ func getCpuDevices() []*pluginapi.Device {
 	}
 	return devices
 }
+
+func main() {
+	flag.Parse()
+	defer glog.Flush()
+	simpleDP := frame.BuildSimpleDevicePlugin("netease/vpcport", "vpcport.sock", getDevices)
+	simpleDP.RunDevicePlugin()
+}
+
