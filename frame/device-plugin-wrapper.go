@@ -74,7 +74,7 @@ L:
 			if event.Name == dpw.socketName && event.Op&fsnotify.Remove == fsnotify.Remove {
 				glog.Warningf("inotify: %s removed, restarting.", dpw.socketName)
 				dpw.Stop()
-				needToStart = true
+				break L
 			}
 		case err := <-watcher.Errors:
 			glog.Warningf("inotify: %s", err)
